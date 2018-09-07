@@ -1,8 +1,6 @@
 // window.onloadend = setup();
-document.addEventListener("DOMContentLoaded", setup, false);
-document.addEventListener("resize", setup, false);
-
-$.getJSON("Fakey.json");
+// document.addEventListener("DOMContentLoaded", setup, false);
+// document.addEventListener("resize", setup, false);
 
 
 function setup() {
