@@ -2,8 +2,6 @@
 <head>
 	<title>JIC 8202 .JS</title>
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<script type="text/javascript" src="UIScript.js"></script>
-	<script type="text/javascript" src="jquery.js"></script>
 </head>
 
 <body>
@@ -15,16 +13,23 @@
 		</div>
 		<div class="searchBarTitle" id = "Home-Search-Bar">
 			<span class="textBox">
-				<input type="text" name="search" class="searchBox" placeholder="Search for an author or scientist here...">
-				<img src="magnifying-glass.png">
+
+				<input type="text" name="search" class="searchBox" id="searchBox" placeholder="Search for an author or scientist here..."/>
+				<img id="searchButton" src="magnifying-glass.png" onclick="pullData()" />
 			</span>
 		</div>
-		<div class="wordBox addendum"></div>
+		<div class="wordBox addendum" id="results">
+			<span class="closeButton" id="closeButton">
+				<img src = "Close.png" onclick = "closeSearch()"/>
+
+			</span>
+		</div>
 
 
 	</div>
 	
-
+	<script src="jquery.js"></script>
+	<script type="text/javascript" src="UIScript.js"></script>
 </body>
 
 
