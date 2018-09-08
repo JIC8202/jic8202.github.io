@@ -1,9 +1,11 @@
+
 // window.onloadend = main();
 document.addEventListener("DOMContentLoaded", main, false);
 // document.addEventListener("resize", setup, false);
 
 var cheatJSON = 
 {"Jules Verne":["Igor Sikorsky","Konstantin Tsiolkovsky","Simon Lake","Yuri Gregarin","Wernher von Braun"],"Isaac Asimov":["Elon Musk"],"Ray Bradbury":["Bill Nye","Steve Jobs","Hermann Oberth"],"Isaac Newton":["Isaac Asimov","Ray Bradbury"]};
+
 
 
 
