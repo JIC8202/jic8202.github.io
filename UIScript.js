@@ -19,7 +19,7 @@ function pullData(){
 	var searchTerm = document.getElementById("searchBox").value;
 	console.log(searchTerm);
 
-	document.getElementById("closeButton").style.visibility = "visible";
+// 	document.getElementById("closeButton").style.visibility = "visible";
 	//clear prev search
 
 	var results = document.getElementById("results")
