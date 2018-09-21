@@ -2,7 +2,7 @@
 
 async function buildGraph() {
 	const svg = d3.select("svg");
-	const data = await d3.json("miserables.json");
+	const data = await d3.json("data.json");
 
 	const simulation = d3.forceSimulation(data.nodes)
 		.force("link", d3.forceLink().id(d => d.id))
