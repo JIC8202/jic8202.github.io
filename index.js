@@ -1,17 +1,20 @@
 'use strict';
 
 async function buildGraph() {
-	const svg = d3.select("svg");
 	const data = await d3.json("data.json");
 
-	const simulation = d3.forceSimulation(data.nodes)
-		.force("link", d3.forceLink().id(d => d.id))
-		.force("charge", d3.forceManyBody())
-		.on("tick", ticked);
-
+	const svg = d3.select("svg");
+	const container = svg.append("g");
 	const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-	const link = svg.append("g")
+	const simulation = d3.forceSimulation(data.nodes)
+		.force("link", d3.forceLink().id(d => d.id).links(data.links))
+		.force("charge", d3.forceManyBody())
+		.force("x", d3.forceX(0))
+		.force("y", d3.forceY(0))
+		.on("tick", ticked);
+
+	const links = container.append("g")
 		.attr("class", "links")
 		.selectAll("line")
 		.data(data.links)
@@ -20,7 +23,7 @@ async function buildGraph() {
 			return Math.sqrt(d.value);
 		});
 
-	const node = svg.append("g")
+	const nodes = container.append("g")
 		.attr("class", "nodes")
 		.selectAll("circle")
 		.data(data.nodes)
@@ -30,23 +33,20 @@ async function buildGraph() {
 			return color(d.group);
 		});
 
-	node.append("title")
+	nodes.append("title")
 		.text(function(d) {
 			return d.id;
 		});
 
-	simulation.force("link")
-		.links(data.links);
-
 	function ticked() {
-		node.attr("cx", d => d.x)
+		nodes.attr("cx", d => d.x)
 			.attr("cy", d => d.y);
-		link.attr("x1", d => d.source.x)
+		links.attr("x1", d => d.source.x)
 			.attr("y1", d => d.source.y)
 			.attr("x2", d => d.target.x)
 			.attr("y2", d => d.target.y);
 	}
-	
+
 	const dragDrop = d3.drag()
 		.on('start', node => {
 			node.fx = node.x;
@@ -64,7 +64,14 @@ async function buildGraph() {
 			node.fx = null;
 			node.fy = null;
 		})
-	node.call(dragDrop);
+	nodes.call(dragDrop);
+
+	var zoom = d3.zoom()
+		.scaleExtent([0.4, 10])
+		.on("zoom", () => {
+			container.attr("transform", d3.event.transform);
+		});
+	svg.call(zoom);
 
 	function center() {
 		const width = svg.node().getBoundingClientRect().width;
