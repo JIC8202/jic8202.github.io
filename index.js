@@ -3,50 +3,40 @@
 async function buildGraph() {
 	const data = await d3.json("data.json");
 
+	// calculate indegree and outdegree
+	data.nodes.forEach(d => {
+		d.indegree = 0;
+		d.outdegree = 0;
+	});
+	data.links.forEach(d => {
+		data.nodes[d.target].indegree++;
+		data.nodes[d.source].outdegree++;
+	});
+
 	const svg = d3.select("svg");
 	const container = svg.append("g");
-	const color = d3.scaleOrdinal(d3.schemeCategory10);
 
 	const simulation = d3.forceSimulation(data.nodes)
-		.force("link", d3.forceLink().id(d => d.id).links(data.links))
+		.force("link", d3.forceLink().links(data.links))
 		.force("charge", d3.forceManyBody())
-		.force("x", d3.forceX(0))
-		.force("y", d3.forceY(0))
+		.force("collide", d3.forceCollide(nodeSize))
 		.on("tick", ticked);
 
 	const links = container.append("g")
 		.attr("class", "links")
 		.selectAll("line")
 		.data(data.links)
-		.enter().append("line")
-		.attr("stroke-width", function(d) {
-			return Math.sqrt(d.value);
-		});
+		.enter().append("line");
 
 	const nodes = container.append("g")
 		.attr("class", "nodes")
 		.selectAll("circle")
 		.data(data.nodes)
 		.enter().append("circle")
-		.attr("r", 5)
-		.attr("fill", function(d) {
-			return color(d.group);
-		});
+		.attr("r", nodeSize)
+		.attr("fill", nodeColor);
 
-	nodes.append("title")
-		.text(function(d) {
-			return d.id;
-		});
-
-	function ticked() {
-		nodes.attr("cx", d => d.x)
-			.attr("cy", d => d.y);
-		links.attr("x1", d => d.source.x)
-			.attr("y1", d => d.source.y)
-			.attr("x2", d => d.target.x)
-			.attr("y2", d => d.target.y);
-	}
-
+	nodes.append("title").text(d => d.id);
 	const dragDrop = d3.drag()
 		.on('start', node => {
 			node.fx = node.x;
@@ -73,21 +63,43 @@ async function buildGraph() {
 		});
 	svg.call(zoom);
 
-	function center() {
-		const width = svg.node().getBoundingClientRect().width;
-		const height = svg.node().getBoundingClientRect().height;
-		simulation.force("center", d3.forceCenter(width / 2, height / 2));
-		simulation.restart();
+	function nodeSize(d) {
+		return Math.sqrt(d.outdegree) + 5;
 	}
-	window.addEventListener("resize", center);
-	center();
+
+	function nodeColor(d) {
+		const ratio = (d.outdegree) / (d.indegree + d.outdegree);
+		return d3.interpolateWarm(ratio);
+	}
+
+	function ticked() {
+		nodes.attr("cx", d => d.x)
+			.attr("cy", d => d.y);
+		links.attr("x1", d => d.source.x)
+			.attr("y1", d => d.source.y)
+			.attr("x2", d => d.target.x)
+			.attr("y2", d => d.target.y);
+	}
+
+	function centerForces() {
+		const bounds = svg.node().getBoundingClientRect();
+		const centerX = bounds.width / 2;
+		const centerY  = bounds.height / 2;
+		simulation
+			.force("center", d3.forceCenter(centerX, centerY))
+			.force("x", d3.forceX(centerX))
+			.force("y", d3.forceY(centerY))
+			.restart();
+	}
+	centerForces();
+	window.addEventListener("resize", centerForces);
 }
 
 function bindInput() {
 	document.querySelector("#search-form")
 		.addEventListener("submit", event => {
 			document.querySelector(".content-wrap-home").style.display = "none";
-			event.preventDefault(); // cancel form submission
+			event.preventDefault();
 		});
 }
 
