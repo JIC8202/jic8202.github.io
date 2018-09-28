@@ -1,6 +1,6 @@
 'use strict';
 
-async function buildGraph() {
+async function loadData() {
 	const data = await d3.json("data.json");
 
 	// calculate indegree and outdegree
@@ -12,6 +12,22 @@ async function buildGraph() {
 		data.nodes[d.target].indegree++;
 		data.nodes[d.source].outdegree++;
 	});
+
+	// generate human-friendly names
+	data.nodes.forEach(d => {
+		d.name = d.id.replace(/_/g, " ");
+	});
+
+	new Awesomplete(document.querySelector("#search-input"), {
+		minChars: 1,
+		list: data.nodes.map(n => n.name)
+	});
+
+	return data;
+}
+
+async function buildGraph() {
+	const data = await loadData();
 
 	const svg = d3.select("svg");
 	const container = svg.append("g");
@@ -36,7 +52,7 @@ async function buildGraph() {
 		.attr("r", nodeSize)
 		.attr("fill", nodeColor);
 
-	nodes.append("title").text(d => d.id);
+	nodes.append("title").text(d => d.name);
 	const dragDrop = d3.drag()
 		.on('start', node => {
 			node.fx = node.x;
@@ -62,6 +78,16 @@ async function buildGraph() {
 			container.attr("transform", d3.event.transform);
 		});
 	svg.call(zoom);
+
+	nodes
+		.on("mouseover", d => {
+			links.attr("class", l =>
+				(l.source == d || l.target == d) ? "highlighted" : null
+			);
+		})
+		.on("mouseout", d => {
+			links.attr("class", null);
+		});
 
 	function nodeSize(d) {
 		return Math.sqrt(d.outdegree) + 5;
@@ -96,11 +122,9 @@ async function buildGraph() {
 }
 
 function bindInput() {
-	document.querySelector("#search-form")
-		.addEventListener("submit", event => {
-			document.querySelector(".content-wrap-home").style.display = "none";
-			event.preventDefault();
-		});
+	d3.select("#explore-link").on("click", () => {
+		document.querySelector(".content-wrap-home").style.display = "none";
+	});
 }
 
 buildGraph();
