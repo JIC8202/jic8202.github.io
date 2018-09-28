@@ -1,36 +1,38 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-	<title>JIC 8202 .JS</title>
+    <meta charset="utf-8"/>
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" href="res/css/awesomplete.css" />
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+	<script src="res/js/awesomplete.min.js" async></script>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="index.js" defer></script>
+
+	<title>JIC 8202 .JS</title>
 </head>
 
 <body>
-	<div class="window-pane">
-		<div class="wordBox title" id="Welcome-Message">
-			Welcome to the <br>
-			TIME MACHINE SPACE DINOSAUR SCIENCE EXPERIMENT <br>
-			Scientist-Author Influence Tree
+	<div class="content-wrap-home">
+		<div class="content-home">
+			<div class="title">
+				Welcome to the<br>
+				TIME MACHINE SPACE DINOSAUR SCIENCE EXPERIMENT<br>
+				Scientist-Author Influence Graph
+			</div>
+
+			<div class="search-wrap">
+				<input id="search-input" autocomplete="off" type="text"
+				placeholder="Search for an author or scientist" />
+			</div>
+
+			<p id="explore-link">or click here to explore the network</p>
 		</div>
-		<div class="searchBarTitle" id = "Home-Search-Bar">
-			<span class="textBox">
-
-				<input type="text" name="search" class="searchBox" id="searchBox" placeholder="Search for an author or scientist here..."/>
-				<img id="searchButton" src="magnifying-glass.png" onclick="pullData()" />
-			</span>
-		</div>
-		<div class="wordBox addendum" id="results">
-			<span class="closeButton" id="closeButton">
-				<img src = "Close.png" onclick = "closeSearch()"/>
-
-			</span>
-		</div>
-
-
 	</div>
-	
-	<script src="jquery.js"></script>
-	<script type="text/javascript" src="UIScript.js"></script>
+
+	<div class="content-wrap-graph">
+		<svg id="graph"></svg>
+	</div>
 </body>
-
-
 </html>
