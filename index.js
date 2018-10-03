@@ -29,6 +29,15 @@ async function loadData() {
 async function buildGraph() {
 	const data = await loadData();
 
+	// adjacency lookup
+	var linkedByIndex = {};
+    data.links.forEach(d => {
+		linkedByIndex[d.source + "," + d.target] = true;
+    });
+	function isConnected(a, b) {
+        return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
+	}
+
 	const svg = d3.select("svg");
 	const container = svg.append("g");
 
