@@ -29,13 +29,23 @@ async function loadData() {
 async function buildGraph() {
 	const data = await loadData();
 
+	// adjacency lookup
+	var linkedByIndex = {};
+    data.links.forEach(d => {
+		linkedByIndex[d.source + "," + d.target] = true;
+    });
+	function isConnected(a, b) {
+        return linkedByIndex[a.index + "," + b.index] || linkedByIndex[b.index + "," + a.index] || a.index == b.index;
+	}
+
 	const svg = d3.select("svg");
 	const container = svg.append("g");
 
 	const simulation = d3.forceSimulation(data.nodes)
 		.force("link", d3.forceLink().links(data.links))
 		.force("charge", d3.forceManyBody())
-		.force("collide", d3.forceCollide(nodeSize))
+		.force("x", d3.forceX())
+		.force("y", d3.forceY())
 		.on("tick", ticked);
 
 	const links = container.append("g")
@@ -77,6 +87,8 @@ async function buildGraph() {
 		.on("zoom", () => {
 			container.attr("transform", d3.event.transform);
 		});
+	// center the graph initially
+	zoom.translateBy(svg, window.innerWidth / 2, window.innerHeight / 2);
 	svg.call(zoom);
 
 	nodes
@@ -106,19 +118,6 @@ async function buildGraph() {
 			.attr("x2", d => d.target.x)
 			.attr("y2", d => d.target.y);
 	}
-
-	function centerForces() {
-		const bounds = svg.node().getBoundingClientRect();
-		const centerX = bounds.width / 2;
-		const centerY  = bounds.height / 2;
-		simulation
-			.force("center", d3.forceCenter(centerX, centerY))
-			.force("x", d3.forceX(centerX))
-			.force("y", d3.forceY(centerY))
-			.restart();
-	}
-	centerForces();
-	window.addEventListener("resize", centerForces);
 }
 
 function bindInput() {
