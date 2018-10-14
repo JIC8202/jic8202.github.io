@@ -131,8 +131,12 @@ html, body {
 	margin: 0;
 }
 
+.tooltip-row {
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: space-between;
+}
+
 .tooltip-link {
 	color: #fff;
-	display: block;
-	text-align: right;
 }
