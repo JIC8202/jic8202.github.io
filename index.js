@@ -48,13 +48,13 @@ async function buildGraph() {
 		.force("y", d3.forceY())
 		.on("tick", ticked);
 
-	const links = container.append("g")
+	const link = container.append("g")
 		.attr("class", "links")
 		.selectAll("line")
 		.data(data.links)
 		.enter().append("line");
 
-	const nodes = container.append("g")
+	const node = container.append("g")
 		.attr("class", "nodes")
 		.selectAll("circle")
 		.data(data.nodes)
@@ -62,7 +62,7 @@ async function buildGraph() {
 		.attr("r", nodeSize)
 		.attr("fill", nodeColor);
 
-	nodes.each(function(d) {tippy(this, getTippyConfig(d))});
+	node.each(function(d) {tippy(this, getTippyConfig(d))});
 
 	const dragDrop = d3.drag()
 		.on('start', node => {
@@ -81,7 +81,7 @@ async function buildGraph() {
 			node.fx = null;
 			node.fy = null;
 		})
-	nodes.call(dragDrop);
+	node.call(dragDrop);
 
 	var zoom = d3.zoom()
 		.scaleExtent([0.4, 10])
@@ -92,14 +92,13 @@ async function buildGraph() {
 	zoom.translateBy(svg, window.innerWidth / 2, window.innerHeight / 2);
 	svg.call(zoom);
 
-	nodes
-		.on("mouseover", d => {
-			links.attr("class", l =>
+	node.on("mouseover", d => {
+			link.attr("class", l =>
 				(l.source == d || l.target == d) ? "highlighted" : null
 			);
 		})
 		.on("mouseout", d => {
-			links.attr("class", null);
+			link.attr("class", null);
 		});
 
 	// draw color legend
@@ -120,9 +119,9 @@ async function buildGraph() {
 	}
 
 	function ticked() {
-		nodes.attr("cx", d => d.x)
+		node.attr("cx", d => d.x)
 			.attr("cy", d => d.y);
-		links.attr("x1", d => d.source.x)
+		link.attr("x1", d => d.source.x)
 			.attr("y1", d => d.source.y)
 			.attr("x2", d => d.target.x)
 			.attr("y2", d => d.target.y);
