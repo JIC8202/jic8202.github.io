@@ -80,6 +80,24 @@ html, body {
 	height: 100%;
 }
 
+.legend {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	pointer-events: none;
+	color: #eeeeee;
+}
+
+.legend-row {
+	display: flex;
+	justify-content: space-between;
+}
+
+.legend-swatch {
+	height: 10px;
+	width: 50px;
+}
+
 /* graph elements */
 .links line {
 	stroke: #999;
