@@ -62,7 +62,8 @@ async function buildGraph() {
 		.attr("r", nodeSize)
 		.attr("fill", nodeColor);
 
-	nodes.append("title").text(d => d.name);
+	nodes.each(function(d) {tippy(this, getTippyConfig(d))});
+
 	const dragDrop = d3.drag()
 		.on('start', node => {
 			node.fx = node.x;
@@ -117,6 +118,35 @@ async function buildGraph() {
 			.attr("y1", d => d.source.y)
 			.attr("x2", d => d.target.x)
 			.attr("y2", d => d.target.y);
+	}
+}
+
+function getTippyConfig(d) {
+	let timeout;
+	return {
+		content: d.name,
+		arrow: true,
+		sticky: true,
+		updateDuration: 0,
+		performance: true,
+		onShow(tip) {
+			timeout = setTimeout(async () => {
+				const response = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + d.id);
+				const json = await response.json();
+				if (tip.state.isVisible) {
+					const el = document.importNode(document.querySelector("#tooltip").content, true);
+					el.querySelector(".tooltip-summary").innerHTML = json.extract_html;
+					el.querySelector(".tooltip-link").href = "https://en.wikipedia.org/wiki/" + d.id;
+					tip.setContent(el.querySelector(".tooltip-content"));
+					tip.set({interactive: true});
+				}
+			}, 2000);
+		},
+		onHidden(tip) {
+			clearTimeout(timeout);
+			tip.setContent(d.name);
+			tip.set({interactive: false});
+		}
 	}
 }
 

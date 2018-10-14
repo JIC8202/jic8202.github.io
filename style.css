@@ -3,6 +3,7 @@ html, body {
 	min-height: 100%;
 	padding: 0;
 	margin: 0;
+	overflow: hidden;
 
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	background-color: #1e222d;
@@ -89,6 +90,7 @@ html, body {
 .nodes circle {
 	stroke: #fff;
 	stroke-width: 1.5px;
+	outline: none;
 }
 
 .links .highlighted {
@@ -99,4 +101,20 @@ html, body {
 .nodes .highlighted {
 	stroke: #0044ff;
 	stroke-width: 3;
+}
+
+/* tooltips */
+.tooltip-content {
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.tooltip-content p {
+	margin: 0;
+}
+
+.tooltip-link {
+	color: #fff;
+	display: block;
+	text-align: right;
 }

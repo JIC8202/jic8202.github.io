@@ -8,6 +8,7 @@
 
 	<script src="res/js/awesomplete.min.js" async></script>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
 	<script src="index.js" defer></script>
 
 	<title>JIC 8202 .JS</title>
@@ -34,5 +35,12 @@
 	<div class="content-wrap-graph">
 		<svg id="graph"></svg>
 	</div>
+
+	<template id="tooltip">
+		<div class="tooltip-content">
+			<div class="tooltip-summary"></div>
+			<a class="tooltip-link" target="_blank">From Wikipedia</a>
+		</div>
+	</template>
 </body>
 </html>
