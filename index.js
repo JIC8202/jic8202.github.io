@@ -1,5 +1,7 @@
 'use strict';
 
+var nodeMap, linkMap, simMap;
+
 async function loadData() {
 	const data = await d3.json("data.json");
 
@@ -126,6 +128,12 @@ async function buildGraph() {
 			.attr("x2", d => d.target.x)
 			.attr("y2", d => d.target.y);
 	}
+
+	nodeMap = node;
+	linkMap = link;
+	simMap = simulation;
+
+
 }
 
 function getTippyConfig(d) {
@@ -161,7 +169,35 @@ function bindInput() {
 	d3.select("#explore-link").on("click", () => {
 		document.querySelector(".content-wrap-home").style.display = "none";
 	});
+
+	document.addEventListener("keydown", function(e){
+		if(e.key === 'Enter'){
+			document.querySelector(".content-wrap-home").style.display = "none";
+			searchNode()
+		}
+	});
 }
+
+function searchNode() {
+
+    //find the node
+    var selectedVal = document.getElementById('search-input').value;
+    //node = svg.selectAll(".node");
+    if (selectedVal == "") {
+      // nodeMap.style("stroke", "white").style("stroke-width", "1");
+      console.log("Nuthin to search");
+    } else {
+      var selected = nodeMap.filter(function(d, i) {
+        return d.name === selectedVal;
+      });
+
+      isolate(selected);
+    }
+}
+
+
+
+
 
 buildGraph();
 bindInput();
