@@ -103,6 +103,76 @@ async function buildGraph() {
 			link.attr("class", null);
 		});
 
+		// begin node isolation
+		var allActive = true;
+		node
+				.on("click", d => {
+						if (allActive) {
+								isolate(d);
+						} else {
+								unisolate(d);
+						}
+
+				})
+
+		function isolate(d) {
+			//if (d3.event.defaultPrevented) return;
+			console.log(JSON.stringify(d))
+			node.style('opacity', function(o) {
+					o.active = isConnected(d, o)
+					return o.active ? 1 : 0.05;
+			});
+
+			link.style('opacity', function(o) {
+					o.active = (o.source == d || o.target == d);
+					return o.active ? 1 : 0.05;
+			});
+
+			allActive = !allActive;
+		}
+
+		function unisolate(d) {
+			if (d3.event.defaultPrevented) return;
+			node.style('opacity', 1);
+			link.style('opacity', 1);
+			allActive = !allActive;
+		}
+		//end node isolation
+
+		function bindInput() {
+			d3.select("#explore-link").on("click", () => {
+				document.querySelector(".content-wrap-home").style.display = "none";
+			});
+
+			document.addEventListener("keydown", function(e){
+				if(e.key === 'Enter'){
+					document.querySelector(".content-wrap-home").style.display = "none";
+					searchNode()
+				}
+			});
+		}
+
+		function searchNode() {
+
+		    //find the node
+		    var selectedVal = document.getElementById('search-input').value;
+		    //node = svg.selectAll(".node");
+		    if (selectedVal == "") {
+		      // nodeMap.style("stroke", "white").style("stroke-width", "1");
+		      console.log("Nuthin to search");
+		    } else {
+		      var selected = node.filter( function(d, i) {
+		    	// console.log(d.id);
+		        return d.name === selectedVal;
+		      });
+
+		      console.log(JSON.stringify(selected._groups[0][0]['__data__']));
+
+
+		      isolate(selected._groups[0][0]['__data__']);
+		    }
+		}
+
 	// draw color legend
 	const palette = d3.select("#legend-palette");
 	var colorScale = d3.range(5).map(t => d3.interpolateWarm(t / 4)).reverse();
@@ -132,6 +202,9 @@ async function buildGraph() {
 	nodeMap = node;
 	linkMap = link;
 	simMap = simulation;
+
+	bindInput();
+
 
 
 }
@@ -165,39 +238,10 @@ function getTippyConfig(d) {
 	}
 }
 
-function bindInput() {
-	d3.select("#explore-link").on("click", () => {
-		document.querySelector(".content-wrap-home").style.display = "none";
-	});
 
-	document.addEventListener("keydown", function(e){
-		if(e.key === 'Enter'){
-			document.querySelector(".content-wrap-home").style.display = "none";
-			searchNode()
-		}
-	});
-}
-
-function searchNode() {
-
-    //find the node
-    var selectedVal = document.getElementById('search-input').value;
-    //node = svg.selectAll(".node");
-    if (selectedVal == "") {
-      // nodeMap.style("stroke", "white").style("stroke-width", "1");
-      console.log("Nuthin to search");
-    } else {
-      var selected = nodeMap.filter(function(d, i) {
-        return d.name === selectedVal;
-      });
-
-      isolate(selected);
-    }
-}
 
 
 
 
 
 buildGraph();
-bindInput();
