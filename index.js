@@ -134,9 +134,9 @@ async function buildGraph() {
 					return o.active ? 1 : 0.05;
 			});
 
-			link.style('opacity', function(o) {
-					o.active = (o.source == d || o.target == d);
-					return o.active ? 1 : 0.05;
+			link.style('display', function(o) {
+				o.active = (o.source == d || o.target == d);
+				return o.active ? null : "none";
 			});
 
 			// center on the selected node
@@ -149,7 +149,7 @@ async function buildGraph() {
 		function unisolate(d) {
 			if (d3.event.defaultPrevented) return;
 			node.style('opacity', 1);
-			link.style('opacity', 1);
+			link.style('display', null);
 			allActive = true;
 		}
 		//end node isolation
