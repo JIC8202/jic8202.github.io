@@ -107,15 +107,24 @@ async function buildGraph() {
 
 		// begin node isolation
 		var allActive = true;
+		var selectedNode;
 		node
 				.on("click", d => {
-						if (allActive) {
+						if (allActive || d != selectedNode) {
+								selectedNode = d;
 								isolate(d);
 						} else {
 								unisolate(d);
 						}
-
+						// stop event from propagating to SVG
+						d3.event.stopPropagation();
 				})
+		svg.on("click", () => {
+			// SVG background click
+			if (!allActive) {
+				unisolate();
+			}
+		})
 
 		function isolate(d) {
 			//if (d3.event.defaultPrevented) return;
@@ -134,14 +143,14 @@ async function buildGraph() {
 			svg.transition().duration(250).call(zoom.translateTo, d.x, d.y);
 			//zoom.translateTo(svg, d.x, d.y);
 
-			allActive = !allActive;
+			allActive = false;
 		}
 
 		function unisolate(d) {
 			if (d3.event.defaultPrevented) return;
 			node.style('opacity', 1);
 			link.style('opacity', 1);
-			allActive = !allActive;
+			allActive = true;
 		}
 		//end node isolation
 
