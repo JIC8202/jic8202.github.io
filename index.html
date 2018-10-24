@@ -23,18 +23,21 @@
 				Scientist-Author Influence Graph
 			</div>
 
-			<div class="search-wrap">
-
-					<input id="search-input" autocomplete="off" type="text"
-					placeholder="Search for an author or scientist"  />
-
-			</div>
+			<form class="search-home search-form">
+				<input class="search-input" autocomplete="off" type="text"
+				placeholder="Search for an author or scientist" />
+			</form>
 
 			<p id="explore-link">or click here to explore the network</p>
 		</div>
 	</div>
 
 	<div class="content-wrap-graph">
+		<form class="search-floating search-form hidden">
+			<input class="search-input" autocomplete="off" type="text"
+			placeholder="Search for an author or scientist" />
+		</form>
+
 		<div class="legend">
 			<div id="legend-palette" class="legend-row"></div>
 			<div class="legend-row">

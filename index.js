@@ -20,10 +20,12 @@ async function loadData() {
 		d.name = d.id.replace(/_/g, " ");
 	});
 
-	new Awesomplete(document.querySelector("#search-input"), {
-		minChars: 1,
-		list: data.nodes.map(n => n.name)
-	});
+	d3.selectAll(".search-input").each(function() {
+		new Awesomplete(this, {
+			minChars: 1,
+			list: data.nodes.map(n => n.name)
+		});
+	})
 
 	return data;
 }
@@ -91,7 +93,7 @@ async function buildGraph() {
 			container.attr("transform", d3.event.transform);
 		});
 	// center the graph initially
-	zoom.translateBy(svg, window.innerWidth / 2, window.innerHeight / 2);
+	zoom.translateTo(svg, 0, 0);
 	svg.call(zoom);
 
 	node.on("mouseover", d => {
@@ -128,6 +130,10 @@ async function buildGraph() {
 					return o.active ? 1 : 0.05;
 			});
 
+			// center on the selected node
+			svg.transition().duration(250).call(zoom.translateTo, d.x, d.y);
+			//zoom.translateTo(svg, d.x, d.y);
+
 			allActive = !allActive;
 		}
 
@@ -141,21 +147,20 @@ async function buildGraph() {
 
 		function bindInput() {
 			d3.select("#explore-link").on("click", () => {
-				document.querySelector(".content-wrap-home").style.display = "none";
+				d3.select(".content-wrap-home").classed("hidden", true);
+				d3.select(".search-floating").classed("hidden", false);
 			});
 
-			document.addEventListener("keydown", function(e){
-				if(e.key === 'Enter'){
-					document.querySelector(".content-wrap-home").style.display = "none";
-					searchNode()
-				}
+			d3.selectAll(".search-form").on("submit", function(d, i) {
+				let input = this.querySelector(".search-input").value;
+				searchNode(input);
+				d3.select(".content-wrap-home").classed("hidden", true);
+				d3.select(".search-floating").classed("hidden", false);
+				d3.event.preventDefault();
 			});
 		}
 
-		function searchNode() {
-
-		    //find the node
-		    var selectedVal = document.getElementById('search-input').value;
+		function searchNode(selectedVal) {
 		    //node = svg.selectAll(".node");
 		    if (selectedVal == "") {
 		      // nodeMap.style("stroke", "white").style("stroke-width", "1");

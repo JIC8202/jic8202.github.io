@@ -9,6 +9,10 @@ html, body {
 	background-color: #1e222d;
 }
 
+.hidden {
+	display: none;
+}
+
 /* home layer */
 .content-wrap-home {
 	position: absolute;
@@ -37,13 +41,23 @@ html, body {
 	text-align: center;
 }
 
-.search-wrap {
-	width: 100%;
+.search-home {
 	max-width: 590px;
 	padding-top: 20px;
 }
 
-.search-wrap input {
+.search-floating {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	max-width: 300px;
+}
+
+.search-form {
+	width: 100%;
+}
+
+.search-form input {
 	width: 100%;
 	height: 2.54545em;
 	font-size: 1.1em;
