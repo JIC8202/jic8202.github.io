@@ -1,4 +1,10 @@
-'use strict';
+import Awesomplete from "awesomplete";
+import tippy from "tippy.js";
+import * as d3 from "d3";
+
+import 'awesomplete/awesomplete.css';
+import 'tippy.js/dist/tippy.css';
+import './style.css';
 
 var nodeMap, linkMap, simMap;
 
