@@ -8,6 +8,7 @@ import 'awesomplete/awesomplete.css';
 import 'tippy.js/dist/tippy.css';
 import './style.css';
 
+let API_URL = "http://nines.mooo.com:3000/";
 var network;
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -35,7 +36,7 @@ function closeHome() {
 }
 
 async function loadData() {
-	const data = await d3.json("data.json");
+	const data = await d3.json(API_URL + "data");
 
 	// calculate indegree and outdegree
 	data.nodes.forEach(d => {
