@@ -15,12 +15,46 @@ export class Network {
         return this.linkedByIndex[a.index + "," + b.index] || this.linkedByIndex[b.index + "," + a.index] || a.index == b.index;
     }
 
+    getAdjacents(a) {
+        return this.adjacencyList[a.index];
+    }
+
     buildGraph() {
         // adjacency lookup
         this.linkedByIndex = {};
+        this.adjacencyList = {};
         this.data.links.forEach(d => {
             this.linkedByIndex[d.source + "," + d.target] = true;
+
+            //Build a darn adjacency list
+            var src = d.source.toString();
+            var tar = d.target.toString();
+            if (this.adjacencyList[src] === undefined) {
+                var dst = d.target.toString();
+                this.adjacencyList[src] = [dst];
+            } else {
+                var dst = d.target.toString();
+                var dsts = this.adjacencyList[src];
+                if (dsts[dst] === undefined) {
+                    dsts.push(dst);
+                }
+                this.adjacencyList[src] = dsts;
+            }
+
+            if (this.adjacencyList[tar] === undefined) {
+                var dst = d.source.toString();
+                this.adjacencyList[tar] = [dst];
+            } else {
+                var dst = d.source.toString();
+                var dsts = this.adjacencyList[tar];
+                if (dsts[dst] === undefined) {
+                    dsts.push(dst);
+                }
+                this.adjacencyList[tar] = dsts;
+            }
         });
+
+        console.log(this.adjacencyList);
     
         let ticked = () => {
             this.node.attr("cx", d => d.x)
@@ -141,6 +175,14 @@ export class Network {
                 o.active = this.isConnected(d, o)
                 return o.active ? 1 : 0.05;
         });
+
+        var adjacents = this.getAdjacents(d);
+        var adjNames = new Array();
+        for (var i = 0; i < adjacents.length; i++) {
+            adjNames.push(this.data.nodes[adjacents[i]].id.replace(/_/g, " "));
+        }
+        console.log(adjacents);
+        console.log(adjNames);
 
         this.link.style('display', function(o) {
             o.active = (o.source == d || o.target == d);
