@@ -8,13 +8,12 @@ import 'awesomplete/awesomplete.css';
 import 'tippy.js/dist/tippy.css';
 import './style.css';
 
-let API_URL = "http://nines.mooo.com:3000/";
 var network;
 
 document.addEventListener('DOMContentLoaded', async function() {
 	let data = await loadData();
 	network = new Network(d3.select("#graph"), data);
-	createNodeColorLegend(network.nodeColorScale);
+	createNodeColorLegend();
 	bindInput();
 });
 
@@ -36,7 +35,7 @@ function closeHome() {
 }
 
 async function loadData() {
-	const data = await d3.json(API_URL + "data");
+	const data = await d3.json("data.json");
 
 	// calculate indegree and outdegree
 	data.nodes.forEach(d => {

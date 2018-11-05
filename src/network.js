@@ -6,8 +6,6 @@ export class Network {
         this.selection = selection;
         this.data = data;
 
-        this.nodeColorScale = d3.interpolateWarm;
-
         this.buildGraph();
     }
 
@@ -154,13 +152,12 @@ export class Network {
         function nodeSize(d) {
             return Math.sqrt(d.outdegree) + 5;
         }
-    
+
         function nodeColor(d) {
-            const ratio = (d.outdegree) / (d.indegree + d.outdegree);
-            return d3.interpolateWarm(ratio);
+            return d3.schemeSet1[d.group - 1];
         }
     }
-    
+
     unisolate(d) {
         if (d3.event.defaultPrevented) return;
         this.node.style('opacity', 1);

@@ -99,22 +99,29 @@ html, body {
 	height: 100%;
 }
 
-.legend {
+/* graph legend */
+#legend {
 	position: absolute;
 	right: 10px;
 	bottom: 10px;
 	pointer-events: none;
-	color: #eeeeee;
 }
 
 .legend-row {
 	display: flex;
-	justify-content: space-between;
+	align-items: center;
+	color: #eeeeee;
+}
+
+.legend-row + .legend-row {
+	margin-top: 5px;
 }
 
 .legend-swatch {
-	height: 10px;
-	width: 50px;
+	height: 20px;
+	width: 20px;
+	border-radius: 10px;
+	margin-right: 5px;
 }
 
 /* graph elements */
