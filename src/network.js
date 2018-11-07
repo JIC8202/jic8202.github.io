@@ -6,6 +6,8 @@ export class Network {
         this.selection = selection;
         this.data = data;
 
+        this.nodeColorScale = d3.interpolateWarm;
+
         this.buildGraph();
     }
 
@@ -28,10 +30,14 @@ export class Network {
             var src = d.source.toString();
             var tar = d.target.toString();
             if (this.adjacencyList[src] === undefined) {
-                var dst = d.target.toString();
+                var dst = {}
+                dst[d.target.toString()] = "to";
+                // var dst = d.target.toString();
                 this.adjacencyList[src] = [dst];
             } else {
-                var dst = d.target.toString();
+                var dst = {}
+                dst[d.target.toString()] = "to";
+                //var dst = d.target.toString();
                 var dsts = this.adjacencyList[src];
                 if (dsts[dst] === undefined) {
                     dsts.push(dst);
@@ -40,10 +46,14 @@ export class Network {
             }
 
             if (this.adjacencyList[tar] === undefined) {
-                var dst = d.source.toString();
+                var dst = {}
+                dst[d.source.toString()] = "from";
+                //var dst = d.source.toString();
                 this.adjacencyList[tar] = [dst];
             } else {
-                var dst = d.source.toString();
+                //var dst = d.source.toString();
+                var dst = {}
+                dst[d.source.toString()] = "from";
                 var dsts = this.adjacencyList[tar];
                 if (dsts[dst] === undefined) {
                     dsts.push(dst);
@@ -152,12 +162,13 @@ export class Network {
         function nodeSize(d) {
             return Math.sqrt(d.outdegree) + 5;
         }
-
+    
         function nodeColor(d) {
-            return d3.schemeSet1[d.group - 1];
+            const ratio = (d.outdegree) / (d.indegree + d.outdegree);
+            return d3.interpolateWarm(ratio);
         }
     }
-
+    
     unisolate(d) {
         if (d3.event.defaultPrevented) return;
         this.node.style('opacity', 1);
@@ -174,12 +185,22 @@ export class Network {
         });
 
         var adjacents = this.getAdjacents(d);
-        var adjNames = new Array();
+        var toNames = new Array();
+        var fromNames = new Array();
         for (var i = 0; i < adjacents.length; i++) {
-            adjNames.push(this.data.nodes[adjacents[i]].id.replace(/_/g, " "));
+            for (var key in adjacents[i]) {
+                var val = adjacents[i][key]
+                console.log(val)
+                if (val == "to") {
+                    toNames.push(this.data.nodes[key].id.replace(/_/g, " "));
+                } else if (val == "from") {
+                    fromNames.push(this.data.nodes[key].id.replace(/_/g, " "));
+                }
+            }
         }
         console.log(adjacents);
-        console.log(adjNames);
+        console.log(toNames);
+        console.log(fromNames)
 
         this.link.style('display', function(o) {
             o.active = (o.source == d || o.target == d);
