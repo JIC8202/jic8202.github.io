@@ -164,8 +164,9 @@ export class Network {
         }
     
         function nodeColor(d) {
-            const ratio = (d.outdegree) / (d.indegree + d.outdegree);
-            return d3.interpolateWarm(ratio);
+            // const ratio = (d.outdegree) / (d.indegree + d.outdegree);
+            // return d3.interpolateWarm(ratio);
+            return d3.schemeSet1[d.group - 1];
         }
     }
     
@@ -185,22 +186,22 @@ export class Network {
         });
 
         var adjacents = this.getAdjacents(d);
-        var toNames = new Array();
-        var fromNames = new Array();
+        var influenceeNames = new Array();
+        var influencerNames = new Array();
         for (var i = 0; i < adjacents.length; i++) {
             for (var key in adjacents[i]) {
                 var val = adjacents[i][key]
                 console.log(val)
                 if (val == "to") {
-                    toNames.push(this.data.nodes[key].id.replace(/_/g, " "));
+                    influenceeNames.push(this.data.nodes[key].id.replace(/_/g, " "));
                 } else if (val == "from") {
-                    fromNames.push(this.data.nodes[key].id.replace(/_/g, " "));
+                    influencerNames.push(this.data.nodes[key].id.replace(/_/g, " "));
                 }
             }
         }
         console.log(adjacents);
-        console.log(toNames);
-        console.log(fromNames)
+        console.log(influenceeNames);
+        console.log(influencerNames)
 
         this.link.style('display', function(o) {
             o.active = (o.source == d || o.target == d);
