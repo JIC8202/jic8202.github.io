@@ -8,6 +8,8 @@ import 'awesomplete/awesomplete.css';
 import 'tippy.js/dist/tippy.css';
 import './style.css';
 
+let API_URL = "http://nines.mooo.com:3000/";
+
 var network;
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -35,16 +37,15 @@ function closeHome() {
 }
 
 async function loadData() {
-	const data = await d3.json("data.json");
+	const data = await d3.json(API_URL + "data");
 
-	// calculate indegree and outdegree
+	// calculate degree
 	data.nodes.forEach(d => {
-		d.indegree = 0;
-		d.outdegree = 0;
+		d.degree = 0;
 	});
 	data.links.forEach(d => {
-		data.nodes[d.target].indegree++;
-		data.nodes[d.source].outdegree++;
+		data.nodes[d.target].degree++;
+		data.nodes[d.source].degree++;
 	});
 
 	// generate human-friendly names

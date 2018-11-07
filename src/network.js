@@ -76,7 +76,7 @@ export class Network {
         const container = this.selection.append("g");
     
         const simulation = d3.forceSimulation(this.data.nodes)
-            .force("link", d3.forceLink().links(this.data.links))
+            .force("link", d3.forceLink().links(this.data.links).distance(40))
             .force("charge", d3.forceManyBody())
             .force("x", d3.forceX())
             .force("y", d3.forceY())
@@ -160,12 +160,10 @@ export class Network {
 
     
         function nodeSize(d) {
-            return Math.sqrt(d.outdegree) + 5;
+            return Math.sqrt(d.degree) + 4;
         }
     
         function nodeColor(d) {
-            // const ratio = (d.outdegree) / (d.indegree + d.outdegree);
-            // return d3.interpolateWarm(ratio);
             return d3.schemeSet1[d.group - 1];
         }
     }
