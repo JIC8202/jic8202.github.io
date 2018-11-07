@@ -1,5 +1,8 @@
+import {createSidebar} from "./sidebar.js";
 import {createTooltip} from './tooltips.js';
+import {setupExport} from './export.js';
 import * as d3 from "d3";
+
 
 export class Network {
     constructor(selection, data) {
@@ -63,7 +66,7 @@ export class Network {
         });
 
         console.log(this.adjacencyList);
-    
+
         let ticked = () => {
             this.node.attr("cx", d => d.x)
                 .attr("cy", d => d.y);
@@ -74,20 +77,20 @@ export class Network {
         }
 
         const container = this.selection.append("g");
-    
+
         const simulation = d3.forceSimulation(this.data.nodes)
             .force("link", d3.forceLink().links(this.data.links).distance(40))
             .force("charge", d3.forceManyBody())
             .force("x", d3.forceX())
             .force("y", d3.forceY())
             .on("tick", ticked);
-    
+
         this.link = container.append("g")
             .attr("class", "links")
             .selectAll("line")
             .data(this.data.links)
             .enter().append("line");
-    
+
         this.node = container.append("g")
             .attr("class", "nodes")
             .selectAll("circle")
@@ -95,9 +98,9 @@ export class Network {
             .enter().append("circle")
             .attr("r", nodeSize)
             .attr("fill", nodeColor);
-    
+
         this.node.each(createTooltip);
-    
+
         const dragDrop = d3.drag()
             .on('start', node => {
                 node.fx = node.x;
@@ -116,7 +119,7 @@ export class Network {
                 node.fy = null;
             })
         this.node.call(dragDrop);
-    
+
         this.zoom = d3.zoom()
             .scaleExtent([0.4, 10])
             .on("zoom", () => {
@@ -125,7 +128,7 @@ export class Network {
         // center the graph initially
         this.zoom.translateTo(this.selection, 0, 0);
         this.selection.call(this.zoom);
-    
+
         this.node.on("mouseover", d => {
                 this.link.attr("class", l =>
                     (l.source == d || l.target == d) ? "highlighted" : null
@@ -134,7 +137,7 @@ export class Network {
             .on("mouseout", d => {
                 this.link.attr("class", null);
             });
-    
+
         // begin node isolation
         this.allActive = true;
         this.selectedNode = null;
@@ -156,20 +159,21 @@ export class Network {
             }
         })
         //end node isolation
-    
 
-    
+
+
         function nodeSize(d) {
             return Math.sqrt(d.degree) + 4;
         }
-    
+
         function nodeColor(d) {
             return d3.schemeSet1[d.group - 1];
         }
     }
-    
+
     unisolate(d) {
         if (d3.event.defaultPrevented) return;
+        d3.select("#sidebar").style("visibility", "hidden");
         this.node.style('opacity', 1);
         this.link.style('display', null);
         this.allActive = true;
@@ -177,6 +181,7 @@ export class Network {
 
     isolate(d) {
         //if (d3.event.defaultPrevented) return;
+        d3.select("#sidebar").style("visibility", "visible");
         console.log(JSON.stringify(d))
         this.node.style('opacity', (o) => {
                 o.active = this.isConnected(d, o)
@@ -199,12 +204,14 @@ export class Network {
         }
         console.log(adjacents);
         console.log(influenceeNames);
-        console.log(influencerNames)
+        console.log(influencerNames);
 
+        setupExport(d.id, this.data);
         this.link.style('display', function(o) {
             o.active = (o.source == d || o.target == d);
             return o.active ? null : "none";
         });
+        createSidebar(d.name, influencerNames, influenceeNames);
 
         // center on the selected node
         this.selection.transition().duration(250).call(this.zoom.translateTo, d.x, d.y);

@@ -124,6 +124,27 @@ html, body {
 	margin-right: 5px;
 }
 
+/* graph sidebar */
+#sidebar {
+	position: absolute;
+	height: 100%;
+	width: 300px;
+	top: 60px;
+	left: 10px;
+	background-color: #eeeeee; /* #333333 */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px;
+    visibility: hidden;
+    /*text-align: center;*/
+    /*font-family: 'Courier New', Courier, monospace;*/
+    /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+}
+
+.sidebar-text {
+	font-family: 'Courier New', Courier, monospace;
+	text-align: center;
+}
+
 /* graph elements */
 .links line {
 	stroke: #999;
