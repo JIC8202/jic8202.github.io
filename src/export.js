@@ -5,14 +5,11 @@ export function setupExport(id, data) {
     d3.select("#sidebar-export").on("click", function() {
         var csv = [];
         for (let link of data.links) {
-            let source = data.nodes[link.source];
-            let target = data.nodes[link.target];
-            if (source.id == id ||target.id == id) {
-                csv.push(source.id + "," + target.id);
+            if (link.source.id == id || link.target.id == id) {
+                csv.push(link.source.id + "," + link.target.id + "\n");
             }
         }
-
-        var file = new File(csv, id + "_adjacents.csv", {type: "text/plain;charset=utf-8"});
+        var file = new File(csv, id + ".csv", {type: "text/plain;charset=utf-8"});
         saveAs(file);
     })
 }
