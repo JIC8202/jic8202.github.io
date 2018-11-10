@@ -1,4 +1,4 @@
-import {createSidebar} from "./sidebar.js";
+import {showSidebar, hideSidebar} from "./sidebar.js";
 import {createTooltip} from './tooltips.js';
 import {setupExport} from './export.js';
 import * as d3 from "d3";
@@ -173,7 +173,7 @@ export class Network {
 
     unisolate(d) {
         if (d3.event.defaultPrevented) return;
-        d3.select("#sidebar").style("visibility", "hidden");
+        hideSidebar();
         this.node.style('opacity', 1);
         this.link.style('display', null);
         this.allActive = true;
@@ -181,7 +181,6 @@ export class Network {
 
     isolate(d) {
         //if (d3.event.defaultPrevented) return;
-        d3.select("#sidebar").style("visibility", "visible");
         console.log(JSON.stringify(d))
         this.node.style('opacity', (o) => {
                 o.active = this.isConnected(d, o)
@@ -211,7 +210,7 @@ export class Network {
             o.active = (o.source == d || o.target == d);
             return o.active ? null : "none";
         });
-        createSidebar(d.name, influencerNames, influenceeNames);
+        showSidebar(d.name, influencerNames, influenceeNames, this);
 
         // center on the selected node
         this.selection.transition().duration(250).call(this.zoom.translateTo, d.x, d.y);

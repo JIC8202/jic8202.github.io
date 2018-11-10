@@ -26,24 +26,23 @@
 	</div>
 
 	<div class="content-wrap-graph">
-		<form class="search-floating search-form hidden">
-			<input class="search-input" autocomplete="off" type="text"
-			placeholder="Search for an author or scientist" />
-		</form>
+		<div class="sidebar">
+			<form class="search-floating search-form hidden">
+				<input class="search-input" autocomplete="off" type="text"
+				placeholder="Search for an author or scientist" />
+			</form>
+			<div id="detail" class="hidden">
+				<h2 id="detail-name"></h2>
+				<div class="detail-listHeader">Links to:</div>
+				<ul id="detail-linksTo" class="detail-links"></ul>
+				<div class="detail-listHeader">Links from:</div>
+				<ul id="detail-linksFrom" class="detail-links"></ul>
+				<button id="detail-export">Export to CSV</button>
+			</div>
+		</div>
 
 		<svg id="graph"></svg>
 		<div id="legend"></div>
-		<!-- bret edit -->
-		<div id="sidebar">
-			<div id="sidebar-name"></div>
-			<div class="sidebar-listHeader">Links to:</div>
-			<div id="sidebar-linksTo"></div>
-			<div class="sidebar-listHeader">Links from:</div>
-			<div id="sidebar-linksFrom"></div>
-			<button id="sidebar-export">Export to CSV</button>
-
-		</div>
-
 	</div>
 
 	<template id="tooltip">

@@ -51,13 +51,6 @@ html, body {
 	padding-top: 20px;
 }
 
-.search-floating {
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	max-width: 300px;
-}
-
 .search-form {
 	width: 100%;
 }
@@ -125,24 +118,55 @@ html, body {
 }
 
 /* graph sidebar */
-#sidebar {
+.sidebar {
 	position: absolute;
-	height: 100%;
-	width: 300px;
-	top: 60px;
-	left: 10px;
-	background-color: #eeeeee; /* #333333 */
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 20px;
-    visibility: hidden;
-    /*text-align: center;*/
-    /*font-family: 'Courier New', Courier, monospace;*/
-    /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+	display: flex;
+	flex-direction: column;
+
+	min-width: 315px;
+	max-width: 400px;
+	max-height: 100vh;
+	box-sizing: border-box;
+
+	padding: 10px;
 }
 
-.sidebar-text {
-	font-family: 'Courier New', Courier, monospace;
-	text-align: center;
+#detail {
+	display: none;
+	flex-direction: column;
+	min-height: 0;
+	background-color: #eeeeee;
+}
+
+#detail > h2,
+#detail > .detail-listHeader, 
+#detail > .detail-links {
+	margin-left: 10px;
+	padding-right: 10px;
+}
+
+#detail.active {
+	display: flex;
+}
+
+.detail-links {
+	overflow-y: auto;
+}
+
+.detail-links.overflow {
+	flex-basis: 100%;
+}
+
+.detail-links:empty::after {
+	content: "None";
+}
+
+.detail-links li {
+	cursor: pointer;
+}
+
+.detail-links li:hover {
+	text-decoration: underline;
 }
 
 /* graph elements */

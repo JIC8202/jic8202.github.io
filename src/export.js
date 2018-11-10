@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import {saveAs} from "file-saver";
 
 export function setupExport(id, data) {
-    d3.select("#sidebar-export").on("click", function() {
+    d3.select("#detail-export").on("click", function() {
         var csv = ["Source,Target\n"];
         for (let link of data.links) {
             if (link.source.id == id || link.target.id == id) {
