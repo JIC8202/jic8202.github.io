@@ -8,7 +8,7 @@ import 'awesomplete/awesomplete.css';
 import 'tippy.js/dist/tippy.css';
 import './style.css';
 
-let API_URL = "http://nines.mooo.com:3000/";
+let API_URL = "https://nines.mooo.com/";
 
 var network;
 
