@@ -2,15 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="stylesheet" href="res/css/awesomplete.css" />
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-
-	<script src="res/js/awesomplete.min.js" async></script>
-	<script src="https://d3js.org/d3.v5.min.js"></script>
-	<script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
-	<script src="index.js" defer></script>
-
+	<link rel="stylesheet" href="main.css">
+	<script src="main.js" defer></script>
 	<title>JIC 8202 .JS</title>
 </head>
 
@@ -33,19 +26,23 @@
 	</div>
 
 	<div class="content-wrap-graph">
-		<form class="search-floating search-form hidden">
-			<input class="search-input" autocomplete="off" type="text"
-			placeholder="Search for an author or scientist" />
-		</form>
-
-		<div class="legend">
-			<div id="legend-palette" class="legend-row"></div>
-			<div class="legend-row">
-				<div>Influencer</div>
-				<div>Influencee</div>
+		<div class="sidebar">
+			<form class="search-floating search-form hidden">
+				<input class="search-input" autocomplete="off" type="text"
+				placeholder="Search for an author or scientist" />
+			</form>
+			<div id="detail" class="hidden">
+				<h2 id="detail-name"></h2>
+				<div class="detail-listHeader">Links to:</div>
+				<ul id="detail-linksTo" class="detail-links"></ul>
+				<div class="detail-listHeader">Links from:</div>
+				<ul id="detail-linksFrom" class="detail-links"></ul>
+				<button id="detail-export">Export to CSV</button>
 			</div>
 		</div>
+
 		<svg id="graph"></svg>
+		<div id="legend"></div>
 	</div>
 
 	<template id="tooltip">
