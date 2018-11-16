@@ -139,7 +139,7 @@ html, body {
 }
 
 #detail > h2,
-#detail > .detail-listHeader, 
+#detail > .detail-listHeader,
 #detail > .detail-links {
 	margin-left: 10px;
 	padding-right: 10px;
@@ -149,12 +149,16 @@ html, body {
 	display: flex;
 }
 
+#detail > button {
+	min-height: 2em;
+}
+
 .detail-links {
-	overflow-y: auto;
+	overflow: hidden auto;
 }
 
 .detail-links.overflow {
-	flex-basis: 100%;
+	flex-basis: 100vh;
 }
 
 .detail-links:empty::after {
