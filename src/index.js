@@ -39,15 +39,6 @@ function closeHome() {
 async function loadData() {
 	const data = await d3.json(API_URL + "data");
 
-	// calculate degree
-	data.nodes.forEach(d => {
-		d.degree = 0;
-	});
-	data.links.forEach(d => {
-		data.nodes[d.target].degree++;
-		data.nodes[d.source].degree++;
-	});
-
 	// generate human-friendly names
 	data.nodes.forEach(d => {
 		d.name = d.id.replace(/_/g, " ");

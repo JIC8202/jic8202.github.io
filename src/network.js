@@ -81,9 +81,11 @@ export class Network {
         const simulation = d3.forceSimulation(this.data.nodes)
             .force("link", d3.forceLink().links(this.data.links).distance(40))
             .force("charge", d3.forceManyBody())
+            .force("collide", d3.forceCollide(nodeSizeCollision))
             .force("x", d3.forceX())
             .force("y", d3.forceY())
-            .on("tick", ticked);
+            .on("tick", ticked)
+            .alpha(0);
 
         this.link = container.append("g")
             .attr("class", "links")
@@ -107,7 +109,7 @@ export class Network {
                 node.fy = node.y;
             })
             .on('drag', node => {
-                simulation.alphaTarget(0.7).restart();
+                simulation.alphaTarget(0.3).restart();
                 node.fx = d3.event.x;
                 node.fy = d3.event.y;
             })
@@ -161,9 +163,12 @@ export class Network {
         //end node isolation
 
 
-
         function nodeSize(d) {
             return Math.sqrt(d.degree) + 4;
+        }
+
+        function nodeSizeCollision(d) {
+            return Math.sqrt(d.degree) + 5;
         }
 
         function nodeColor(d) {
