@@ -1,91 +1,49 @@
+import * as d3 from "d3";
 import {showSidebar, hideSidebar} from "./sidebar.js";
 import {createTooltip} from './tooltips.js';
 import {setupExport} from './export.js';
-import * as d3 from "d3";
-
 
 export class Network {
-    constructor(selection, data) {
-        this.selection = selection;
+    constructor(svg, data) {
+        this.svg = svg;
         this.data = data;
+        this.selectedNode = null;
 
-        this.nodeColorScale = d3.interpolateWarm;
+        this.nodeColor = d3.scaleOrdinal(d3.schemeSet1)
+            .domain([1,2,3]);
 
-        this.buildGraph();
-    }
+        // Build an adjacency list (and calculate degree)
+        data.nodes.forEach(node => {
+            node.children = [];
+            node.parents = [];
 
-    isConnected(a, b) {
-        return this.linkedByIndex[a.index + "," + b.index] || this.linkedByIndex[b.index + "," + a.index] || a.index == b.index;
-    }
+            node.degree = 0;
+        });
+        data.links.forEach(function(link) {
+            link.source.children.push(link.target);
+            link.target.parents.push(link.source);
 
-    getAdjacents(a) {
-        return this.adjacencyList[a.index];
-    }
-
-    buildGraph() {
-        // adjacency lookup
-        this.linkedByIndex = {};
-        this.adjacencyList = {};
-        this.data.links.forEach(d => {
-            this.linkedByIndex[d.source + "," + d.target] = true;
-
-            //Build a darn adjacency list
-            var src = d.source.toString();
-            var tar = d.target.toString();
-            if (this.adjacencyList[src] === undefined) {
-                var dst = {}
-                dst[d.target.toString()] = "to";
-                // var dst = d.target.toString();
-                this.adjacencyList[src] = [dst];
-            } else {
-                var dst = {}
-                dst[d.target.toString()] = "to";
-                //var dst = d.target.toString();
-                var dsts = this.adjacencyList[src];
-                if (dsts[dst] === undefined) {
-                    dsts.push(dst);
-                }
-                this.adjacencyList[src] = dsts;
-            }
-
-            if (this.adjacencyList[tar] === undefined) {
-                var dst = {}
-                dst[d.source.toString()] = "from";
-                //var dst = d.source.toString();
-                this.adjacencyList[tar] = [dst];
-            } else {
-                //var dst = d.source.toString();
-                var dst = {}
-                dst[d.source.toString()] = "from";
-                var dsts = this.adjacencyList[tar];
-                if (dsts[dst] === undefined) {
-                    dsts.push(dst);
-                }
-                this.adjacencyList[tar] = dsts;
-            }
+            link.source.degree++;
+            link.target.degree++;
         });
 
-        console.log(this.adjacencyList);
+        this.bind();
+    }
 
-        let ticked = () => {
-            this.node.attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-            this.link.attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
-        }
+    // checks if two nodes are connected
+    connected(d, o) {
+        return o === d ||
+            (d.children.includes(o)) || (o.children.includes(d)) ||
+            (o.parents.includes(d)) || (d.parents.includes(o));
+    };
 
-        const container = this.selection.append("g");
+    // check if a link is incident to a node
+    incident(l, n) {
+        return l.source == n || l.target == n;
+    }
 
-        const simulation = d3.forceSimulation(this.data.nodes)
-            .force("link", d3.forceLink().links(this.data.links).distance(40))
-            .force("charge", d3.forceManyBody())
-            .force("collide", d3.forceCollide(nodeSizeCollision))
-            .force("x", d3.forceX())
-            .force("y", d3.forceY())
-            .on("tick", ticked)
-            .alpha(0);
+    bind() {
+        const container = this.svg.append("g");
 
         this.link = container.append("g")
             .attr("class", "links")
@@ -98,128 +56,80 @@ export class Network {
             .selectAll("circle")
             .data(this.data.nodes)
             .enter().append("circle")
-            .attr("r", nodeSize)
-            .attr("fill", nodeColor);
+            .attr("r", d => Math.sqrt(d.degree) + 4)
+            .attr("fill", d => this.nodeColor(d.group));
+
+        this.node.attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+        this.link.attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
 
         this.node.each(createTooltip);
 
+        // pan and zoom
         this.zoom = d3.zoom()
             .scaleExtent([0.4, 10])
             .on("zoom", () => {
                 container.attr("transform", d3.event.transform);
             });
+
         // center the graph initially
-        this.zoom.translateTo(this.selection, 0, 0);
-        this.selection.call(this.zoom);
+        this.zoom.translateTo(this.svg, 0, 0);
+        this.svg.call(this.zoom);
 
+        // highlight incident links on mouseover
         this.node.on("mouseover", d => {
-                this.link.attr("class", l =>
-                    (l.source == d || l.target == d) ? "highlighted" : null
-                );
-            })
-            .on("mouseout", d => {
-                this.link.attr("class", null);
-            });
+            this.link.classed("highlight", l => this.incident(l, d));
+        })
+        .on("mouseout", d => {
+            this.link.classed("highlight", false);
+        });
 
-        // begin node isolation
-        this.allActive = true;
-        this.selectedNode = null;
-        this.node
-                .on("click", d => {
-                        if (this.allActive || d != this.selectedNode) {
-                                this.selectedNode = d;
-                                this.isolate(d);
-                        } else {
-                                this.unisolate(d);
-                        }
-                        // stop event from propagating to SVG
-                        d3.event.stopPropagation();
-                });
-        this.selection.on("click", () => {
-            // SVG background click
-            if (!this.allActive) {
+        // node isolation
+        this.node.on("click", d => {
+            if (this.selectedNode != d) {
+                this.isolate(d);
+            } else {
                 this.unisolate();
             }
-        })
-        //end node isolation
-
-
-        function nodeSize(d) {
-            return Math.sqrt(d.degree) + 4;
-        }
-
-        function nodeSizeCollision(d) {
-            return Math.sqrt(d.degree) + 5;
-        }
-
-        function nodeColor(d) {
-            return d3.schemeSet1[d.group - 1];
-        }
-    }
-
-    unisolate(d) {
-        if (d3.event.defaultPrevented) return;
-        hideSidebar();
-        this.node.style('opacity', 1);
-        this.link.style('display', null);
-        this.allActive = true;
-    }
-
-    isolate(d) {
-        //if (d3.event.defaultPrevented) return;
-        console.log(JSON.stringify(d))
-        this.node.style('opacity', (o) => {
-                o.active = this.isConnected(d, o)
-                return o.active ? 1 : 0.05;
+            // stop event from propagating to background
+            d3.event.stopPropagation();
         });
-
-        var adjacents = this.getAdjacents(d);
-        var influenceeNames = new Array();
-        var influencerNames = new Array();
-        for (var i = 0; i < adjacents.length; i++) {
-            for (var key in adjacents[i]) {
-                var val = adjacents[i][key]
-                console.log(val)
-                if (val == "to") {
-                    influenceeNames.push(this.data.nodes[key].id.replace(/_/g, " "));
-                } else if (val == "from") {
-                    influencerNames.push(this.data.nodes[key].id.replace(/_/g, " "));
-                }
+        // unisolate on background click
+        this.svg.on("click", () => {
+            if (!this.selectedNode != null) {
+                this.unisolate();
             }
-        }
-        console.log(adjacents);
-        console.log(influenceeNames);
-        console.log(influencerNames);
-
-        setupExport(d.id, this.data);
-        this.link.style('display', function(o) {
-            o.active = (o.source == d || o.target == d);
-            return o.active ? null : "none";
         });
-        showSidebar(d.name, influencerNames, influenceeNames, this);
+    }
+
+    isolate(node) {
+        this.selectedNode = node;
+
+        this.node.classed("fade", o => !this.connected(node, o));
+        this.link.classed("fade", l => !this.incident(l, node));
 
         // center on the selected node
-        this.selection.transition().duration(250).call(this.zoom.translateTo, d.x, d.y);
-        //zoom.translateTo(this.selection, d.x, d.y);
+        this.svg.transition().duration(250)
+            .call(this.zoom.translateTo, node.x, node.y);
 
-        this.allActive = false;
+        showSidebar(node, this);
+        setupExport(node.id, this.data);
     }
 
-    searchNode(selectedVal) {
-        //node = svg.selectAll(".node");
-        if (selectedVal == "") {
-            // nodeMap.style("stroke", "white").style("stroke-width", "1");
-            console.log("Nuthin to search");
-        } else {
-            var selected = this.node.filter( function(d, i) {
-            // console.log(d.id);
-            return d.name === selectedVal;
-            });
+    unisolate() {
+        this.selectedNode = null;
 
-            console.log(JSON.stringify(selected._groups[0][0]['__data__']));
+        this.node.classed("fade", false);
+        this.link.classed("fade", false);
 
+        hideSidebar();
+    }
 
-            this.isolate(selected._groups[0][0]['__data__']);
-        }
+    searchNode(input) {
+        let match = this.data.nodes.find(node => node.name == input);
+        if (match) this.isolate(match);
     }
 }

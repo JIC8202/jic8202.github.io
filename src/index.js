@@ -39,6 +39,12 @@ function closeHome() {
 async function loadData() {
 	const data = await d3.json(API_URL + "data");
 
+	// source/target IDs -> object references
+	data.links.forEach(link => {
+		link.source = data.nodes[link.source];
+		link.target = data.nodes[link.target];
+	})
+
 	// generate human-friendly names
 	data.nodes.forEach(d => {
 		d.name = d.id.replace(/_/g, " ");

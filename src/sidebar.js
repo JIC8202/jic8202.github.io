@@ -1,11 +1,11 @@
 import * as d3 from "d3";
 
-export function showSidebar(name, influencers, influencees, network) {
+export function showSidebar(node, network) {
     d3.select("#detail").classed("active", true);
-    d3.select("#detail-name").text(name);
+    d3.select("#detail-name").text(node.name);
 
-    updateJoin("#detail-linksTo", influencers, network);
-    updateJoin("#detail-linksFrom", influencees, network);
+    updateJoin("#detail-linksTo", node.children, network);
+    updateJoin("#detail-linksFrom", node.parents, network);
 
     // detect overflow (scrollbar) on .detail-links
     // if there is overflow, set a constant flex-basis
@@ -26,16 +26,16 @@ function updateJoin(selector, data, network) {
         .selectAll("li")
         .data(data);
     row.enter().append("li")
-        .text(d => d)
+        .text(d => d.name)
         .on("click", onClick.bind(network))
         .merge(row)
-        .text(d => d)
+        .text(d => d.name)
         .on("click", onClick.bind(network));
     row.exit().remove();
 }
 
 function onClick(d) {
-    this.searchNode(d);
+    this.isolate(d);
 }
 
 export function hideSidebar() {

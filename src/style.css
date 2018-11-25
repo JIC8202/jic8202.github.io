@@ -186,14 +186,22 @@ html, body {
 	outline: none;
 }
 
-.links .highlighted {
+.links .highlight {
 	stroke: #0044ff;
 	stroke-width: 2;
 }
 
-.nodes .highlighted {
+.nodes .highlight {
 	stroke: #0044ff;
 	stroke-width: 3;
+}
+
+.links .fade {
+	display: none;
+}
+
+.nodes .fade {
+	opacity: 0.05;
 }
 
 /* tooltips */
