@@ -11,6 +11,8 @@ export class Network {
 
         this.nodeColor = d3.scaleOrdinal(d3.schemeSet1)
             .domain([1,2,3]);
+        this.accentColor = d3.scaleOrdinal(d3.schemePastel1)
+            .domain([1,2,3]);
 
         // Build an adjacency list (and calculate degree)
         data.nodes.forEach(node => {
@@ -46,16 +48,16 @@ export class Network {
         const container = this.svg.append("g");
 
         this.link = container.append("g")
-            .attr("class", "links")
             .selectAll("line")
             .data(this.data.links)
-            .enter().append("line");
+            .enter().append("line")
+            .attr("class", "link");
 
         this.node = container.append("g")
-            .attr("class", "nodes")
             .selectAll("circle")
             .data(this.data.nodes)
             .enter().append("circle")
+            .attr("class", "node")
             .attr("r", d => Math.sqrt(d.degree) + 4)
             .attr("fill", d => this.nodeColor(d.group));
 
@@ -81,10 +83,12 @@ export class Network {
 
         // highlight incident links on mouseover
         this.node.on("mouseover", d => {
-            this.link.classed("highlight", l => this.incident(l, d));
+            if (!this.selectedNode)
+                this.highlight(d);
         })
         .on("mouseout", d => {
-            this.link.classed("highlight", false);
+            if (!this.selectedNode)
+                this.unhighlight(d);
         });
 
         // node isolation
@@ -92,21 +96,25 @@ export class Network {
             if (this.selectedNode != d) {
                 this.isolate(d);
             } else {
-                this.unisolate();
+                this.unisolate(this.selectedNode);
             }
             // stop event from propagating to background
             d3.event.stopPropagation();
         });
         // unisolate on background click
         this.svg.on("click", () => {
-            if (!this.selectedNode != null) {
-                this.unisolate();
+            if (this.selectedNode) {
+                this.unisolate(this.selectedNode);
             }
         });
     }
 
     isolate(node) {
+        if (this.selectedNode)
+            this.unhighlight(this.selectedNode);
+
         this.selectedNode = node;
+        this.highlight(node);
 
         this.node.classed("fade", o => !this.connected(node, o));
         this.link.classed("fade", l => !this.incident(l, node));
@@ -119,13 +127,34 @@ export class Network {
         setupExport(node.id, this.data);
     }
 
-    unisolate() {
+    unisolate(node) {
         this.selectedNode = null;
+        this.unhighlight(node);
 
         this.node.classed("fade", false);
         this.link.classed("fade", false);
 
         hideSidebar();
+    }
+
+    highlight(node) {
+        this.node.filter(d => this.connected(node, d))
+            .classed("highlight", true)
+            .style("stroke", d => this.accentColor(d.group));
+
+        this.link.filter(l => this.incident(l, node))
+            .classed("highlight", true)
+            .style("stroke", l => {
+                let other = l.source == node ? l.target : l.source;
+                return this.accentColor(other.group);
+            });
+    }
+
+    unhighlight(node) {
+        this.node.filter(d => this.connected(node, d))
+            .classed("highlight", false).style("stroke", null);
+        this.link.filter(l => this.incident(l, node))
+            .classed("highlight", false).style("stroke", null);
     }
 
     searchNode(input) {

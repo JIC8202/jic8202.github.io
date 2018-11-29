@@ -43,7 +43,7 @@ async function loadData() {
 	data.links.forEach(link => {
 		link.source = data.nodes[link.source];
 		link.target = data.nodes[link.target];
-	})
+	});
 
 	// generate human-friendly names
 	data.nodes.forEach(d => {
@@ -55,7 +55,7 @@ async function loadData() {
 			minChars: 1,
 			list: data.nodes.map(n => n.name)
 		});
-	})
+	});
 
 	return data;
 }

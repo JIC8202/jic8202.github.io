@@ -174,33 +174,31 @@ html, body {
 }
 
 /* graph elements */
-.links line {
+.link {
 	stroke: #999;
 	stroke-opacity: 0.6;
 	stroke-width: 1;
 }
 
-.nodes circle {
+.node {
 	stroke: #fff;
-	stroke-width: 1.5px;
+	stroke-width: 1;
 	outline: none;
 }
 
-.links .highlight {
-	stroke: #0044ff;
+.link.highlight {
 	stroke-width: 2;
 }
 
-.nodes .highlight {
-	stroke: #0044ff;
-	stroke-width: 3;
+.node.highlight {
+	stroke-width: 1.5;
 }
 
-.links .fade {
+.link.fade {
 	display: none;
 }
 
-.nodes .fade {
+.node.fade {
 	opacity: 0.05;
 }
 
