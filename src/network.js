@@ -120,8 +120,7 @@ export class Network {
         this.link.classed("fade", l => !this.incident(l, node));
 
         // center on the selected node
-        this.svg.transition().duration(250)
-            .call(this.zoom.translateTo, node.x, node.y);
+        this.zoomExtents(node);
 
         showSidebar(node, this);
         setupExport(node.id, this.data);
@@ -155,6 +154,30 @@ export class Network {
             .classed("highlight", false).style("stroke", null);
         this.link.filter(l => this.incident(l, node))
             .classed("highlight", false).style("stroke", null);
+    }
+
+    zoomExtents(node) {
+        let adj = [node].concat(node.parents, node.children);
+
+        let bounds = [
+            [d3.min(adj, d => d.x), d3.min(adj, d => d.y)],
+            [d3.max(adj, d => d.x), d3.max(adj, d => d.y)]
+        ];
+
+        let dx = bounds[1][0] - bounds[0][0],
+            dy = bounds[1][1] - bounds[0][1],
+            cx = (bounds[0][0] + bounds[1][0]) / 2,
+            cy = (bounds[0][1] + bounds[1][1]) / 2;
+
+        let extent = this.zoom.extent().apply(this.svg.node()),
+            width = extent[1][0] - extent[0][0],
+            height = extent[1][1] - extent[0][1];
+
+        let scale = Math.max(0.8, Math.min(2, 0.9 / Math.max(dx / width, dy / height))),
+            translate = [width / 2 - scale * cx, height / 2 - scale * cy];
+
+        this.svg.transition().duration(750).call(this.zoom.transform,
+            d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
     }
 
     searchNode(input) {
