@@ -241,10 +241,17 @@ html, body {
 	flex-direction: column;
 	min-height: 0;
 	background-color: #eeeeee;
+	opacity: 0.5;
+
+	transition: opacity 0.5s;
+}
+
+#detail:hover {
+	opacity: 1;
 }
 
 #detail > h2,
-#detail > .detail-listHeader, 
+#detail > .detail-listHeader,
 #detail > .detail-links {
 	margin-left: 10px;
 	padding-right: 10px;
@@ -254,12 +261,16 @@ html, body {
 	display: flex;
 }
 
+#detail > button {
+	min-height: 2em;
+}
+
 .detail-links {
-	overflow-y: auto;
+	overflow: hidden auto;
 }
 
 .detail-links.overflow {
-	flex-basis: 100%;
+	flex-basis: 100vh;
 }
 
 .detail-links:empty::after {
@@ -275,26 +286,32 @@ html, body {
 }
 
 /* graph elements */
-.links line {
+.link {
 	stroke: #999;
 	stroke-opacity: 0.6;
 	stroke-width: 1;
 }
 
-.nodes circle {
+.node {
 	stroke: #fff;
-	stroke-width: 1.5px;
+	stroke-width: 1;
 	outline: none;
 }
 
-.links .highlighted {
-	stroke: #0044ff;
+.link.highlight {
 	stroke-width: 2;
 }
 
-.nodes .highlighted {
-	stroke: #0044ff;
-	stroke-width: 3;
+.node.highlight {
+	stroke-width: 1.5;
+}
+
+.link.fade {
+	display: none;
+}
+
+.node.fade {
+	opacity: 0.05;
 }
 
 /* tooltips */
