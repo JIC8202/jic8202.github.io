@@ -6,6 +6,8 @@ export function showSidebar(node, network) {
 
     updateJoin("#detail-linksTo", node.children, network);
     updateJoin("#detail-linksFrom", node.parents, network);
+    
+
 
     // detect overflow (scrollbar) on .detail-links
     // if there is overflow, set a constant flex-basis
@@ -26,16 +28,27 @@ function updateJoin(selector, data, network) {
         .selectAll("li")
         .data(data);
     row.enter().append("li")
+        .append("label")
         .text(d => d.name)
         .on("click", onClick.bind(network))
         .merge(row)
         .text(d => d.name)
-        .on("click", onClick.bind(network));
+        .on("click", onClick.bind(network))
+        .append("button")
+        .text("X")
+        .on("click", function() {
+              deleteLink(row)
+              d3.event.stopPropagation();
+            });
     row.exit().remove();
 }
 
 function onClick(d) {
     this.isolate(d);
+}
+
+function deleteLink(name) {
+    console.log(name)
 }
 
 export function hideSidebar() {
