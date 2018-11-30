@@ -173,7 +173,7 @@ export class Network {
             width = extent[1][0] - extent[0][0],
             height = extent[1][1] - extent[0][1];
 
-        let scale = Math.max(0.8, Math.min(2, 0.9 / Math.max(dx / width, dy / height))),
+        let scale = Math.min(2, 0.9 / Math.max(dx / width, dy / height)),
             translate = [width / 2 - scale * cx, height / 2 - scale * cy];
 
         this.svg.transition().duration(750).call(this.zoom.transform,
