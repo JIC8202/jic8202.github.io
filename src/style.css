@@ -136,6 +136,13 @@ html, body {
 	flex-direction: column;
 	min-height: 0;
 	background-color: #eeeeee;
+	opacity: 0.5;
+
+	transition: opacity 0.5s;
+}
+
+#detail:hover {
+	opacity: 1;
 }
 
 #detail > h2,
