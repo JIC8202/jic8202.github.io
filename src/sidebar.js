@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import * as Popper from "popper.js";
 
 export function showSidebar(node, network) {
     d3.select("#detail").classed("active", true);
@@ -24,11 +25,12 @@ export function showSidebar(node, network) {
 }
 
 function updateJoin(selector, data, network) {
+
+
     let row = d3.select(selector)
         .selectAll("li")
         .data(data);
     row.enter().append("li")
-        .append("label")
         .text(d => d.name)
         .on("click", onClick.bind(network))
         .merge(row)
@@ -36,9 +38,24 @@ function updateJoin(selector, data, network) {
         .on("click", onClick.bind(network))
         .append("button")
         .text("X")
+        .each(function(d){
+            d3.select(this).attr("name", d.id)
+                .attr("select", d.id);
+        })
         .on("click", function() {
-              deleteLink(row)
-              d3.event.stopPropagation();
+            d3.select(this).style({"background-color": "red"});
+            var select = d3.select("#detail-name").text().replace(/ /g,"_");
+            if(this.parentNode.parentNode.id === "detail-linksTo"){
+                deleteLink(select, this.name)
+            }
+            else{
+                deleteLink(this.name, select)
+            }
+            d3.event.stopPropagation();
+
+              
+              
+
             });
     row.exit().remove();
 }
@@ -47,8 +64,17 @@ function onClick(d) {
     this.isolate(d);
 }
 
-function deleteLink(name) {
-    console.log(name)
+function deleteLink(source, target) {
+    var confirmDelete = confirm("Are you sure you want to delete the link between " + source + " and " + target + "?");
+    if(confirmDelete){
+        fetch(
+            "https://nines.mooo.com/link/" + source + "/" + target,
+            {
+                method: 'DELETE'
+            }
+        )
+        .then(res => res.json())
+    }
 }
 
 export function hideSidebar() {
