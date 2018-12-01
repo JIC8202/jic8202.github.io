@@ -46,8 +46,11 @@ function onClick(d) {
     this.isolate(d);
 }
 
-function deleteLink(name) {
-    console.log(name)
+function deleteLink(link) {
+    var confirmDelete = confirm("Are you sure you want to delete the link between " + source + " and " + target + "?");
+    if (confirmDelete) {
+        api.deleteLink(source, target);
+    }
 }
 
 export function hideSidebar() {
