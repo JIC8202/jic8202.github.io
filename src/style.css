@@ -118,7 +118,7 @@ html, body {
 }
 
 /* graph sidebar */
-.sidebar {
+#sidebar {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
@@ -131,12 +131,22 @@ html, body {
 	padding: 10px;
 }
 
+#sidebar h1,
+#sidebar h2 {
+	margin: 0;
+	padding: 0 8px 0 8px;
+}
+
+#sidebar h2 {
+	margin-top: 5px;
+}
+
 #detail {
 	display: none;
 	flex-direction: column;
 	min-height: 0;
 	background-color: #eeeeee;
-	opacity: 0.5;
+	opacity: 0.7;
 
 	transition: opacity 0.5s;
 }
@@ -145,18 +155,11 @@ html, body {
 	opacity: 1;
 }
 
-#detail > h2,
-#detail > .detail-listHeader,
-#detail > .detail-links {
-	margin-left: 10px;
-	padding-right: 10px;
-}
-
 #detail.active {
 	display: flex;
 }
 
-#detail > button {
+#detail-export {
 	min-height: 2em;
 }
 
@@ -170,14 +173,42 @@ html, body {
 
 .detail-links:empty::after {
 	content: "None";
+	padding-left: 16px;
 }
 
-.detail-links li {
+.link-row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 2px 1px 1px 16px;
 	cursor: pointer;
 }
 
-.detail-links li:hover {
-	text-decoration: underline;
+.link-row:hover {
+	background-color: #4CAF50;
+	color: #ffffff;
+}
+
+.link-row label {
+	cursor: inherit;
+}
+
+.link-row button {
+	visibility: hidden;
+	background: none;
+	border: 0;
+	cursor: inherit;
+
+	color: #ffffff;
+	transition: color 0.5s ease;
+}
+
+.link-row:hover button {
+	visibility: visible;
+}
+
+.link-row button:hover {
+	color: red;
 }
 
 /* graph elements */

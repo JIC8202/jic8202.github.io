@@ -5,6 +5,7 @@ import {Network} from "./network.js";
 import {createNodeColorLegend} from "./legend.js";
 
 import 'awesomplete/awesomplete.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 import 'tippy.js/dist/tippy.css';
 import './style.css';
 
