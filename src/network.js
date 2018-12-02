@@ -14,21 +14,6 @@ export class Network {
         this.accentColor = d3.scaleOrdinal(d3.schemePastel1)
             .domain([1,2,3]);
 
-        // Build an adjacency list (and calculate degree)
-        data.nodes.forEach(node => {
-            node.children = [];
-            node.parents = [];
-
-            node.degree = 0;
-        });
-        data.links.forEach(function(link) {
-            link.source.children.push(link.target);
-            link.target.parents.push(link.source);
-
-            link.source.degree++;
-            link.target.degree++;
-        });
-
         this.bind();
     }
 
@@ -45,41 +30,67 @@ export class Network {
     }
 
     bind() {
-        const container = this.svg.append("g");
+        this.container = this.svg.append("g");
+        this.linkContainer = this.container.append("g");
+        this.nodeContainer = this.container.append("g");
 
-        this.link = container.append("g")
-            .selectAll("line")
-            .data(this.data.links)
-            .enter().append("line")
-            .attr("class", "link");
-
-        this.node = container.append("g")
-            .selectAll("circle")
-            .data(this.data.nodes)
-            .enter().append("circle")
-            .attr("class", "node")
-            .attr("r", d => Math.sqrt(d.degree) + 4)
-            .attr("fill", d => this.nodeColor(d.group));
-
-        this.node.attr("cx", d => d.x)
-            .attr("cy", d => d.y);
-        this.link.attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
-
-        this.node.each(createTooltip);
+        this.update();
 
         // pan and zoom
         this.zoom = d3.zoom()
             .scaleExtent([0.4, 10])
             .on("zoom", () => {
-                container.attr("transform", d3.event.transform);
+                this.container.attr("transform", d3.event.transform);
             });
 
         // center the graph initially
         this.zoom.translateTo(this.svg, 0, 0);
         this.svg.call(this.zoom);
+    }
+
+    update() {
+        // Build an adjacency list (and calculate degree)
+        this.data.nodes.forEach(node => {
+            node.children = [];
+            node.parents = [];
+
+            node.degree = 0;
+        });
+        this.data.links.forEach(function(link) {
+            link.source.children.push(link.target);
+            link.target.parents.push(link.source);
+
+            link.source.degree++;
+            link.target.degree++;
+        });
+
+        let link = this.linkContainer
+            .selectAll(".link")
+            .data(this.data.links);
+        let linkMerge = link.enter().append("line")
+            .attr("class", "link")
+            .merge(link)
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+        link.exit().remove();
+        this.link = linkMerge;
+
+        let node = this.nodeContainer
+            .selectAll(".node")
+            .data(this.data.nodes);
+        let nodeMerge = node.enter().append("circle")
+            .attr("class", "node")
+            .merge(node)
+            .attr("r", d => Math.sqrt(d.degree) + 4)
+            .attr("fill", d => this.nodeColor(d.group))
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+        node.exit().remove();
+        this.node = nodeMerge;
+
+        this.node.each(createTooltip);
 
         // highlight incident links on mouseover
         this.node.on("mouseover", d => {
@@ -122,7 +133,7 @@ export class Network {
         // center on the selected node
         this.zoomExtents(node);
 
-        showSidebar(node, this);
+        showSidebar.call(this, node);
         setupExport(node.id, this.data);
     }
 
@@ -183,5 +194,13 @@ export class Network {
     searchNode(input) {
         let match = this.data.nodes.find(node => node.name == input);
         if (match) this.isolate(match);
+    }
+
+    deleteLink(link) {
+        let selected = this.selectedNode;
+        if (selected) this.unisolate(selected);
+        this.data.links = this.data.links.filter(d => d != link);
+        this.update();
+        if (selected) this.isolate(selected);
     }
 }

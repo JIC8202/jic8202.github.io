@@ -1,11 +1,14 @@
 import * as d3 from "d3";
+import * as api from "./api";
 
-export function showSidebar(node, network) {
+export function showSidebar(node) {
     d3.select("#detail").classed("active", true);
     d3.select("#detail-name").text(node.name);
 
-    updateJoin("#detail-linksTo", node.children, network);
-    updateJoin("#detail-linksFrom", node.parents, network);
+    d3.select("#detail-linksTo")
+        .call(updateJoin.bind(this), node, node.children, outLink);
+    d3.select("#detail-linksFrom")
+        .call(updateJoin.bind(this), node, node.parents, inLink);
 
     // detect overflow (scrollbar) on .detail-links
     // if there is overflow, set a constant flex-basis
@@ -21,8 +24,12 @@ export function showSidebar(node, network) {
     }).classed("overflow", true);
 }
 
-function updateJoin(selector, data, network) {
-    let row = d3.select(selector)
+export function hideSidebar() {
+    d3.select("#detail").classed("active", false);
+}
+
+function updateJoin(selector, node, data, linkFn) {
+    let row = selector
         .selectAll("li")
         .data(data);
 
@@ -33,26 +40,40 @@ function updateJoin(selector, data, network) {
         .attr("class", "fas fa-times");
 
     let merge = enter.merge(row)
-        .on("click", onClick.bind(network));
+        .on("click", onClick.bind(this));
     merge.select("label")
         .text(d => d.name);
     merge.select("button")
-        .on("click", deleteLink);
+        .on("click", d => {
+            let link = linkFn.call(this, node, d);
+            deleteLink.call(this, link);
+            d3.event.stopPropagation();
+        });
 
     row.exit().remove();
+}
+
+function deleteLink(link) {
+    var confirmDelete = confirm(
+        "Are you sure you want to delete the link between "
+        + link.source.name + " and " + link.target.name + "?"
+    );
+    if (confirmDelete) {
+        this.deleteLink(link);
+        api.deleteLink(link.source.id, link.target.id);
+    }
 }
 
 function onClick(d) {
     this.isolate(d);
 }
 
-function deleteLink(link) {
-    var confirmDelete = confirm("Are you sure you want to delete the link between " + source + " and " + target + "?");
-    if (confirmDelete) {
-        api.deleteLink(source, target);
-    }
+function inLink(node, adj) {
+    return this.data.links
+        .find(link => link.target == node && link.source == adj);
 }
 
-export function hideSidebar() {
-    d3.select("#detail").classed("active", false);
+function outLink(node, adj) {
+    return this.data.links
+        .find(link => link.source == node && link.target == adj);
 }

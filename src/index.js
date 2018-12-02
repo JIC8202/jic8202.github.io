@@ -1,6 +1,7 @@
 import Awesomplete from "awesomplete";
 import * as d3 from "d3";
 
+import * as api from "./api";
 import {Network} from "./network.js";
 import {createNodeColorLegend} from "./legend.js";
 
@@ -8,8 +9,6 @@ import 'awesomplete/awesomplete.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'tippy.js/dist/tippy.css';
 import './style.css';
-
-let API_URL = "https://nines.mooo.com/";
 
 var network;
 
@@ -38,7 +37,7 @@ function closeHome() {
 }
 
 async function loadData() {
-	const data = await d3.json(API_URL + "data");
+	const data = await api.getData();
 
 	// source/target IDs -> object references
 	data.links.forEach(link => {
