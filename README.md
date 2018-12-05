@@ -29,6 +29,7 @@ some members omitted for privacy
 ### Known bugs
 * website is slow for user interaction --- not much we can do about that, there's too much data
 * scroll bar for the sidebar disappears for some operating systems
+* no functionality for authentication for data manipulation yet
 
 ## Development Guide
 ### Setting up
