@@ -1,4 +1,4 @@
-const API_URL = "https://nines.mooo.com/";
+const API_URL = "https://nines.mooo.com:3000/";
 
 export async function getData() {
     return fetch(API_URL + "data")
